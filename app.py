@@ -1,4 +1,3 @@
-
 import streamlit as st
 from google.cloud import storage
 import uuid
@@ -6,22 +5,15 @@ import json
 import time
 import os
 import subprocess
-
-import streamlit as st
 from google.oauth2 import service_account
-from google.cloud import storage
-import json
 
-# Copy และแก้ไข private_key ให้อยู่ในรูปแบบที่ระบบต้องการ
+# 🔐 Load service account credentials from Streamlit secrets
 service_account_info = dict(st.secrets["gcp_service_account"])
 service_account_info["private_key"] = service_account_info["private_key"].replace("\\n", "\n")
-
-# ใช้งาน credential ได้
 creds = service_account.Credentials.from_service_account_info(service_account_info)
 client = storage.Client(credentials=creds, project="big-data-computing-457211")
 
-
-
+# 📦 Configuration
 PROJECT_ID = "big-data-computing-457211"
 BUCKET_NAME = "job-title-predict-bucket"
 INPUT_PATH = "job-description-inputs"
@@ -43,11 +35,10 @@ if st.button("🚀 Predict Job Title"):
     with open(local_input, "w") as f:
         f.write(desc)
 
-    client = storage.Client(project=PROJECT_ID)
     bucket = client.bucket(BUCKET_NAME)
     bucket.blob(input_blob).upload_from_filename(local_input)
 
-    # Submit Dataproc Job
+    # 🧠 Submit Dataproc Job
     cmd = [
         "gcloud", "dataproc", "jobs", "submit", "pyspark", PYSPARK_SCRIPT_GCS,
         "--cluster", DATAPROC_CLUSTER,
@@ -67,7 +58,7 @@ if st.button("🚀 Predict Job Title"):
         st.code(e.stderr)
         st.stop()
 
-    # Wait for result
+    # ⏳ Wait for prediction result
     st.info("⏳ Waiting for result...")
     for _ in range(30):
         if storage.Blob(bucket=bucket, name=output_blob).exists(client):
