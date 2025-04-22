@@ -6,10 +6,13 @@ import json
 import time
 import os
 import subprocess
+from google.oauth2 import service_account
 from google.cloud import storage
+import streamlit as st
 
-# ใช้ Application Default Credential (email เดียวกัน)
-client = storage.Client(project="big-data-computing-457211")
+creds = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
+client = storage.Client(credentials=creds, project="big-data-computing-457211")
+
 
 PROJECT_ID = "big-data-computing-457211"
 BUCKET_NAME = "job-title-predict-bucket"
