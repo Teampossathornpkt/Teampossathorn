@@ -6,6 +6,10 @@ import json
 import time
 import os
 import subprocess
+from google.cloud import storage
+
+# ใช้ Application Default Credential (email เดียวกัน)
+client = storage.Client(project="big-data-computing-457211")
 
 PROJECT_ID = "big-data-computing-457211"
 BUCKET_NAME = "job-title-predict-bucket"
