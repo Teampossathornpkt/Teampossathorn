@@ -6,12 +6,22 @@ import json
 import time
 import os
 import subprocess
+
 from google.oauth2 import service_account
 from google.cloud import storage
-import streamlit as st
 
-creds = service_account.Credentials.from_service_account_info(st.secrets["gcp_service_account"])
+# โหลด credentials จาก Streamlit Secrets
+creds = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"]
+)
+
 client = storage.Client(credentials=creds, project="big-data-computing-457211")
+
+# ตัวอย่างการทดสอบ: แสดงชื่อไฟล์ใน GCS
+blobs = list(client.list_blobs("job-title-predict-bucket"))
+for b in blobs[:5]:
+    st.write(b.name)
+
 
 
 PROJECT_ID = "big-data-computing-457211"
